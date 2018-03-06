@@ -1,0 +1,76 @@
+<meta charset="utf-8">
+<script>
+   $(function () {
+	   $.formValidator.initConfig({
+		   theme:'Default',mode:'AutoTip',formID:"myform",debug:true,submitOnce:true,onSuccess:function(){
+				   edit();
+			       return false;
+			}});
+		
+   });
+   function edit(){
+	   var params = {};
+	   params.score = $.trim($('#score').val());
+	   params.scoreType = $('input[name="scoreType"]:checked').val();
+	   params.dataRemarks = $('#dataRemarks').val();
+	   params.id = $('#id').val();
+	   if(params.score==""){
+		   Plugins.Tips({title:'信息提示',icon:'error',content:'请输入大于0的调节积分数',timeout:1000});
+		   return;
+	   }
+	   if(params.dataRemarks==""){
+		   Plugins.Tips({title:'信息提示',icon:'error',content:'请输入积分调节备注',timeout:1000});
+		   return;
+	   }
+	   Plugins.waitTips({title:'信息提示',content:'正在提交数据，请稍后...'});
+		$.post("{:U('Admin/Users/editScore')}",params,function(data,textStatus){
+			var json = WST.toJson(data);
+			if(json.status=='1'){
+				Plugins.setWaitTipsMsg({ content:'操作成功',timeout:1000,callback:function(){
+				    location.href='{:U("Admin/Users/getScoreList",array("id"=>$id))}';
+				}});
+			}else{
+				Plugins.closeWindow();
+				Plugins.Tips({title:'信息提示',icon:'error',content:'操作失败!',timeout:1000});
+			}
+		});
+   }
+   </script>
+<form name="myform" method="post" id="myform" autocomplete="off">
+	<input type='hidden' id='id' value='{$id}' />
+	<table class="table table-hover table-striped table-bordered wst-form">
+		<tr>
+			<th width='100' align='right'>账号：</th>
+			<td>{$user.loginName}</td>
+		</tr>
+
+		<tr>
+			<th align='right'>类型<font color='red'>*</font>：
+			</th>
+			<td><label> <input type='radio' value='1'
+					name='scoreType' checked />增加
+			</label> <label> <input type='radio' value='2' name='scoreType' />减少
+			</label></td>
+		</tr>
+		<tr>
+			<th width='120' align='right'>调节积分<font color='red'>*</font>：
+			</th>
+			<td><input type='text' id='score'
+				class="form-control wst-ipt-10" value='' maxLength='10'
+				onkeypress="return WST.isNumberKey(event)"
+				onkeyup="javascript:WST.isChinese(this,1)" />
+		</tr>
+		<tr>
+			<th width='120' align='right'>调节备注<font color='red'>*</font>：
+			</th>
+			<td><textarea id='dataRemarks' rows="5" class="form-control"
+					style="width: 350px;"></textarea>
+		</tr>
+		<tr>
+			<td colspan='2' style='padding-left: 250px;'>
+				<button type="submit" class="btn btn-success">保&nbsp;存</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">返&nbsp;回</button>
+			</td>
+		</tr>
+	</table>
+</form>

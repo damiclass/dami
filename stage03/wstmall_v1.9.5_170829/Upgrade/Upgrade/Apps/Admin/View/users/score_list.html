@@ -1,0 +1,98 @@
+
+
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{$CONF['mallTitle']}后台管理中心</title>
+<link href="__PUBLIC__/plugins/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="__ROOT__/Apps/Admin/View/css/AdminLTE.css" rel="stylesheet"
+	type="text/css" />
+<!--[if lt IE 9]>
+      <script src="__PUBLIC__/js/html5shiv.min.js"></script>
+      <script src="__PUBLIC__/js/respond.min.js"></script>
+      <![endif]-->
+<script src="__PUBLIC__/js/jquery.min.js"></script>
+<script src="__PUBLIC__/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/plugins/formValidator/formValidator-4.1.3.js"></script>
+<script src="__PUBLIC__/plugins/plugins/plugins.js"></script>
+</head>
+<script>
+   function toEditScore(id){
+	   var url = "{:U('Admin/Users/toEditScore',array('id'=>'__0'))}".replace('__0',id);
+	   Plugins.Modal({url:url,title:'编辑积分信息',width:500});
+   }
+   </script>
+<body class='wst-page'>
+	<form method='post' action='{:U("Admin/Users/getScoreList")}'>
+		<div class='wst-tbar'>
+			<input type="hidden" name="id" value="{$id}"> 积分类型：<select
+				id='scoreType' name='scoreType' class="form-control wst-ipt-10">
+				<option value='-1'<if condition=" $scoreType eq -1 ">selected</if>>全部
+				</option>
+				<option value='2'<if condition=" $scoreType eq 2 ">selected</if>>支出
+				</option>
+				<option value='1'<if condition=" $scoreType eq 1 ">selected</if>>收入
+				</option>
+			</select>
+
+			<button type="submit"
+				class="btn btn-primary glyphicon glyphicon-search">查询</button>
+			用户：{$user["userName"]?$user["userName"]:$user["loginName"]} 可用积分
+			:{$user["userScore"]} <a class="btn btn-primary"
+				href="{:U('Admin/Users/index')}"
+				style='float: right; margin-left: 10px;'>返回</a>
+			<php>if(in_array('hylb_04',$WST_STAFF['grant'])){</php>
+			<a class="btn btn-success glyphicon glyphicon-plus"
+				href="javascript:toEditScore({$id})" style='float: right;'>新增</a>
+			<php>}</php>
+		</div>
+
+	</form>
+
+	<div class="wst-body">
+		<table class="table table-hover table-striped table-bordered wst-list">
+			<thead>
+				<tr>
+					<th width='30'>&nbsp;</th>
+					<th width='240'>来源/用途</th>
+					<th width='150'>积分变化</th>
+					<th width='220'>日期</th>
+					<th>备注</th>
+				</tr>
+			</thead>
+			<tbody>
+				<volist name="Page['root']" id="vo" key='i'>
+				<tr>
+					<td>{$i}</td>
+					<td>
+						<?php if($vo[dataSrc]==1){ ?> 【{$vo[orderNo]}】交易订单 <?php }else if($vo[dataSrc]==2){ ?>
+						【{$vo[orderNo]}】评价订单 <?php }else if($vo[dataSrc]==3){ ?>
+						【{$vo[orderNo]}】取消订单返还 <?php }else if($vo[dataSrc]==4){ ?>
+						【{$vo[orderNo]}】拒收返还 <?php }else if($vo[dataSrc]==5){ ?> 管理员 <?php } ?>
+					</td>
+					<td>
+						<?php if($vo[scoreType]==1){ ?> <span
+						style="color: green; font-size: 16px; font-weight: bold;">+
+							{$vo['score']}</span> <?php }else if($vo[scoreType]==2){ ?> <span
+						style="color: red; font-size: 16px; font-weight: bold;"> -
+							{$vo['score']}</span> <?php } ?>
+					</td>
+					<td>{$vo[createTime]}&nbsp;</td>
+					<td>{$vo[dataRemarks]}&nbsp;</td>
+
+				</tr>
+				</volist>
+				<tr>
+					<td colspan='11' align='center'>{$Page['pager']}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
