@@ -1,12 +1,15 @@
+ path=`pwd`
+
 wget http://mirrors.163.com/.help/CentOS6-Base-163.repo
 mv -v  CentOS6-Base-163.repo  /etc/yum.repos.d/
 sed -i "s/\$releasever/6.9/g" /etc/yum.repos.d/CentOS6-Base-163.repo
+cp -vf yum.repos.d/* /etc/yum.repos.d/ 
 yum makecache
 
-mkdir ~/down || echo "down dir exist"
-cd /root/down
+yum install git -y
 
- yum remove postfix* 
+
+ yum remove postfix*  -y
 
 rpm -qa | grep mysql-libs | xargs rpm -e
 
@@ -28,13 +31,13 @@ useradd -s /sbin/nologin -g mysql -M mysql
 tail -1 /etc/passwd    
 
 
-wget --no-check-certificate http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz 
+#wget --no-check-certificate http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz 
 tar zxvf cmake-2.8.12.2.tar.gz 
 cd cmake-2.8.12.2 && ./configure 
 make && make install
-cd /root/down
+cd $path
 #--------------------------------
-wget http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.33.tar.gz --no-check-certificate
+#wget http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.33.tar.gz --no-check-certificate
 tar zxvf mysql-5.6.33.tar.gz
 cd mysql-5.6.33
 cmake \
@@ -70,10 +73,15 @@ mv -v /etc/my.cnf     /etc/my.cnf.bak
 
 /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
 
+
+cd ..
+
 cp support-files/mysql.server /etc/init.d/mysqld   
 chmod +x /etc/init.d/mysqld 
 chkconfig mysqld on
 service mysqld start
+
+cp -avf /usr/local/mysql/bin/mysql /bin/
 
 echo 'PATH=/usr/local/mysql/bin:$PATH' >> /etc/profile
 echo 'export PATH' >> /etc/profile
@@ -84,14 +92,14 @@ echo "Enter new root pwd for mysql"
 /usr/local/mysql/bin/mysqladmin -uroot -p password
 ## 这里先不输入密码 然后再输入两次root
 #-------
-cd  /root/down
+cd $path
 
-wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+#wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
 tar zxvf libiconv-1.14.tar.gz
 cd libiconv-1.14
 ./configure --prefix=/usr/local/libiconv
 make && make install
-cd ..
+cd $path
 #--------
 
 # libmcrypt 连接不上 需要手动别的地方下载
@@ -100,7 +108,7 @@ tar zxvf libmcrypt-2.5.7.tar.gz
 cd libmcrypt-2.5.7
 ./configure
 make && make install
-cd ..
+cd $path
 #------
 
 # mhash 得从别的地方下载
@@ -109,19 +117,19 @@ tar -xzvf mhash-0.9.9.9.tar.gz
 cd mhash-0.9.9.9
 ./configure
 make && make install
-cd ..
+cd $path
 
 #------
 
 echo '/usr/local/lib/' >> /etc/ld.so.conf
 ldconfig
 
-wget http://jaist.dl.sourceforge.net/project/mcrypt/MCrypt/2.6.8/mcrypt-2.6.8.tar.gz
+#wget http://jaist.dl.sourceforge.net/project/mcrypt/MCrypt/2.6.8/mcrypt-2.6.8.tar.gz
 tar zxvf mcrypt-2.6.8.tar.gz
 cd mcrypt-2.6.8
 ./configure
 make && make install
-cd ..
+cd $path
 
 # 编译mcrypt可能会报错：/bin/rm: cannot remove `libtoolT’: No such file or directory
 
@@ -145,7 +153,7 @@ yum -y install enchant-devel
 yum -y install libcurl-devel
 
 
-wget http://au1.php.net/get/php-5.6.26.tar.gz/from/this/mirror
+#wget http://au1.php.net/get/php-5.6.26.tar.gz/from/this/mirror
 mv mirror   php-5.6.26.tar.gz
 tar zxvf php-5.6.26.tar.gz
 cd php-5.6.26
@@ -165,8 +173,8 @@ chkconfig php-fpm on
 groupadd www
 useradd -s /sbin/nologin -g www -M www
 #----
-cd /root/down
 
+cd $path
 
 
 
