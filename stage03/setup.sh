@@ -176,7 +176,22 @@ useradd -s /sbin/nologin -g www -M www
 
 cd $path
 
+yum install nginx -y
+\cp -vf default.conf /etc/nginx/conf.d/
+server nginx restart
 
+mkdir /var/www/
+chmod 777 /var/www/
 
+mkdir /var/www/opensns  
+mkdir /var/www/web2  
+mkdir /var/www/Xiuno
 
+\cp -rvf wstmall_v1.9.5_170829/* /var/www/web2/
+\cp -rvf xiuno_bbs_3.0/* /var/www/Xiuno/
+\cp -rvf OpenSNS_a5/opensns_free/* /var/www/opensns/
+
+chmod 777 -R /var/www/web2/*
+chmod 777 -R /var/www/Xiuno/*
+chmod 777 -R /var/www/opensns/*
 
